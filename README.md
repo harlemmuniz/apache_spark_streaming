@@ -1,2 +1,2 @@
-# apache_spark_streaming
-A streaming project using Spark and Google Dataproc to listen from Kafka and write to Big Query
+# Apache Spark Streaming
+A streaming project using Apache Spark and Google Dataproc to listen from Apache Kafka and write to Google Big Query
