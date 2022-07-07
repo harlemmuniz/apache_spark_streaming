@@ -4,20 +4,20 @@ from pyspark.sql.types import *
 
 if __name__ == "__main__":
 
-    spark = SparkSession.builder.appName("Kafka + Spark Streaming Test").getOrCreate()
+    spark = SparkSession.builder.appName("Kafka + Spark Streaming + Google Big Query").getOrCreate()
     spark.sparkContext.setLogLevel("WARN")
 
-    tabela_big_query = "datasetSparkStargate.tabela-kafka-spark-stargate-v2"
-    spark.conf.set("temporaryGcsBucket","bucket-spark31-stargate-v2")
+    bigquery_table = "dataset-name.table-name"
+    spark.conf.set("temporaryGcsBucket","bucket-name")
 
     df = (
         spark.readStream.format("kafka")
         .option(
             "kafka.bootstrap.servers",
-            "10.128.15.203:9092,10.128.15.206:9092,10.128.15.207:9092",
+            "<broker-1-ip>:<broker-1-port>,<broker-2-ip>:<broker-2-port>,<broker-n-ip>:<broker-n-port>",
         )
-        .option("subscribe", "google-analytics")
-        .option("group.id", "stargate-spark-group")
+        .option("subscribe", "kafka-topic")
+        .option("group.id", "spark-group")
         .load()
     )
     df.printSchema()
@@ -52,8 +52,8 @@ if __name__ == "__main__":
     query = (
         dataframe.writeStream 
         .format("bigquery") 
-        .option("checkpointLocation", "gs://bucket-spark31-stargate-v2/checkpoints/") 
-        .option("table", tabela_big_query)
+        .option("checkpointLocation", "gs://bucket-location/checkpoints/") 
+        .option("table", bigquery_table)
         .trigger(processingTime="60 second")
         .start()
     )
